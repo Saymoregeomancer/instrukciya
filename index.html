@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Інструкція: обробка контенту</title>
+<meta name="description" content="Покрокова інструкція: формування архіву, завантаження на портал, обробка шаблону та виправлення помилок.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f5f2; --surface:#ffffff; --surface-2:#efede8; --text:#1c1c1e; --muted:#6b6a66;
+  --border:#e2dfd8; --accent:#2f6df6; --accent-soft:#e7eeff; --warn:#b4570b; --warn-soft:#fff3e4;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 24px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f0f10; --surface:#18181a; --surface-2:#222225; --text:#ececec; --muted:#9a9aa0;
+    --border:#2c2c30; --accent:#7aa2ff; --accent-soft:#1d2741; --warn:#f0a35a; --warn-soft:#2e2216;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f0f10; --surface:#18181a; --surface-2:#222225; --text:#ececec; --muted:#9a9aa0;
+  --border:#2c2c30; --accent:#7aa2ff; --accent-soft:#1d2741; --warn:#f0a35a; --warn-soft:#2e2216;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.layout{max-width:1180px;margin:0 auto;padding:0 16px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:48px}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr);gap:0}}
+
+/* header */
+header.hero{max-width:1180px;margin:0 auto;padding:56px 16px 32px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:clamp(30px,5vw,44px);line-height:1.15;margin:8px 0 12px;letter-spacing:-.02em}
+.lead{color:var(--muted);max-width:640px;margin:0;font-size:17px}
+.theme-btn{position:fixed;top:14px;right:14px;z-index:20;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;width:40px;height:40px;cursor:pointer;font-size:18px;box-shadow:var(--shadow)}
+
+/* toc */
+nav.toc{position:sticky;top:24px;align-self:start;padding-top:8px}
+nav.toc ol{list-style:none;margin:0;padding:0;counter-reset:t}
+nav.toc li{counter-increment:t}
+nav.toc a{display:flex;gap:10px;align-items:center;padding:8px 12px;border-radius:10px;color:var(--muted);text-decoration:none;font-weight:500;font-size:15px}
+nav.toc a::before{content:counter(t);display:inline-grid;place-items:center;width:24px;height:24px;border-radius:7px;background:var(--surface-2);font-size:12px;font-weight:700;color:var(--muted)}
+nav.toc a:hover{background:var(--surface)}
+nav.toc a.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+nav.toc a.active::before{background:var(--accent);color:#fff}
+@media (max-width:900px){
+  nav.toc{position:static;margin-bottom:24px}
+  nav.toc ol{display:flex;flex-wrap:wrap;gap:6px}
+  nav.toc a{background:var(--surface);border:1px solid var(--border);padding:6px 12px}
+}
+
+/* sections */
+main{min-width:0;padding-bottom:80px}
+section.part{margin-bottom:56px}
+.part-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.part-num{flex:none;width:44px;height:44px;border-radius:12px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700;font-size:20px}
+h2{font-size:26px;margin:0;letter-spacing:-.01em}
+.step{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow)}
+.step-head{display:flex;gap:12px;align-items:baseline}
+.step-id{flex:none;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:6px}
+.step p{margin:0 0 10px}
+.step p:last-child{margin-bottom:0}
+.step ul,.step ol{margin:6px 0 10px;padding-left:22px}
+.step li{margin:4px 0}
+.btn-label{display:inline-block;font-weight:600;font-size:14px;padding:1px 9px;border-radius:7px;border:1px solid var(--border);background:var(--surface-2);white-space:nowrap}
+.note{border-left:3px solid var(--warn);background:var(--warn-soft);padding:10px 14px;border-radius:0 10px 10px 0;margin:12px 0 0}
+.note strong{color:var(--warn)}
+.options{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:10px}
+.option{border:1px dashed var(--border);border-radius:12px;padding:12px 14px;background:var(--surface-2)}
+.option b{display:block;margin-bottom:4px}
+
+/* media */
+figure{margin:14px 0 4px}
+figure .frame{display:inline-block;max-width:100%;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:#111;cursor:zoom-in;line-height:0}
+figure img{max-width:100%;height:auto;display:block}
+figcaption{font-size:13px;color:var(--muted);margin-top:6px;display:flex;gap:8px;align-items:center}
+.tag{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:5px;background:var(--surface-2);color:var(--muted)}
+.tag.video{background:var(--accent-soft);color:var(--accent)}
+
+/* lightbox */
+.lb{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:50;padding:16px;cursor:zoom-out}
+.lb.open{display:flex}
+.lb img{max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.lb-close{position:absolute;top:12px;right:16px;color:#fff;font-size:32px;background:none;border:0;cursor:pointer}
+
+footer{color:var(--muted);font-size:13px;text-align:center;padding:24px 16px 40px;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<button class="theme-btn" id="themeBtn" title="Змінити тему" aria-label="Змінити тему">◐</button>
+
+<header class="hero">
+  <div class="eyebrow">Інструкція</div>
+  <h1>Обробка контенту на порталі</h1>
+  <p class="lead">Покроково: як сформувати архів, завантажити його на портал, обробити шаблон і виправити помилки після перевірки. Натисніть на будь-яке зображення, щоб збільшити його.</p>
+</header>
+
+<div class="layout">
+<nav class="toc" aria-label="Зміст">
+  <ol>
+    <li><a href="#archive">Формування архіву</a></li>
+    <li><a href="#start">Початок роботи</a></li>
+    <li><a href="#template">Обробка шаблону</a></li>
+    <li><a href="#errors">Помилки</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- 1 -->
+<section class="part" id="archive">
+  <div class="part-head"><div class="part-num">1</div><h2>Формування архіву</h2></div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">1.1</span><div>
+      <p>Архів, який буде відправлятися на портал, має містити Excel-файл (шаблон), а поруч із ним — усі папки із зображеннями товарів.</p>
+    </div></div>
+    <figure><span class="frame"><img src="img/screen-1.jpg" width="1119" height="335" alt="Вміст архіву: папки з фото та файл шаблону xlsx"></span><figcaption><span class="tag">Скрін 1</span>Вміст архіву</figcaption></figure>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">1.2</span><div>
+      <p>Другий архів має бути з обкладинками. Тут є два варіанти:</p>
+    </div></div>
+    <div class="options">
+      <div class="option"><b>Варіант 1</b>Одразу обробляєте і додаткові фото, і обкладинки та складаєте їх у два різні архіви.</div>
+      <div class="option"><b>Варіант 2</b>Завантажуєте на портал лише один архів, а вже на порталі обираєте зображення для обкладинок: вивантажуєте ці фото назад, обробляєте їх і масово завантажуєте на портал, але вже як обкладинки.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="part" id="start">
+  <div class="part-head"><div class="part-num">2</div><h2>Початок роботи</h2></div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">2.1</span><div>
+      <p>На головній сторінці є кнопка <span class="btn-label">+ Додати контент</span>. Після натискання на неї відкривається меню, де можна додати архів. Сюди завантажуємо архів зі скріна 1.</p>
+    </div></div>
+    <figure><span class="frame"><img src="img/screen-2.jpg" width="1280" height="318" alt="Головна сторінка порталу" loading="lazy"></span><figcaption><span class="tag">Скрін 2</span>Головна сторінка</figcaption></figure>
+    <figure><span class="frame"><img src="img/screen-3.jpg" width="715" height="475" alt="Меню додавання архіву" loading="lazy"></span><figcaption><span class="tag">Скрін 3</span>Меню додавання архіву</figcaption></figure>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">2.2</span><div>
+      <p>Вікно прогресу завантаження архіву на портал. Зазвичай завантаження триває близько 10 хвилин.</p>
+    </div></div>
+    <figure><span class="frame"><img src="img/screen-4.jpg" width="1280" height="785" alt="Прогрес завантаження архіву" loading="lazy"></span><figcaption><span class="tag">Скрін 4</span>Прогрес завантаження</figcaption></figure>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">2.3</span><div>
+      <p>Після завантаження з'явиться приблизно таке вікно з інформацією про обробку. Вона нам не потрібна — натискаємо <span class="btn-label">Перейти до контенту</span>.</p>
+    </div></div>
+    <figure><span class="frame"><img src="img/screen-5.jpg" width="1174" height="1266" alt="Результат обробки архіву" loading="lazy"></span><figcaption><span class="tag">Скрін 5</span>Результат обробки</figcaption></figure>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="part" id="template">
+  <div class="part-head"><div class="part-num">3</div><h2>Обробка шаблону</h2></div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">3.1</span><div>
+      <p>Вікно обробки шаблону.</p>
+    </div></div>
+    <figure><span class="frame"><img src="img/screen-6.jpg" width="1280" height="261" alt="Вікно обробки шаблону" loading="lazy"></span><figcaption><span class="tag">Скрін 6</span>Вікно обробки</figcaption></figure>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">3.1.1</span><div>
+      <p>У колонці «Поставщик» вказуємо причину, чому товар не оброблено (1, 2, 3, 4, 5, 6), — так само, як це було в шаблоні.</p>
+    </div></div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">3.2</span><div>
+      <p>З назви, як завжди, прибираємо все зайве (бренд, стать, колір, тип тощо).</p>
+    </div></div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">3.3</span><div>
+      <p>У всіх інших полях значення можна обирати з випадаючого списку. Для швидкого пошуку потрібного значення можна ввести його частину — портал підтягне запропоновані варіанти. Також додано варіант «Пропустити». За потреби можна вписати значення, якого немає у списку.</p>
+    </div></div>
+    <figure><span class="frame"><img src="img/screen-7.jpg" width="171" height="270" alt="Випадаючий список із варіантом Пропустити" loading="lazy"></span><figcaption><span class="tag">Скрін 7</span>Випадаючий список</figcaption></figure>
+    <figure><span class="frame"><img src="gif/video-1.gif" width="598" height="510" alt="Приклад вибору значення зі списку" loading="lazy"></span><figcaption><span class="tag video">Відео 1</span>Приклад</figcaption></figure>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">3.4</span><div>
+      <p>Значення, які Аїшка не заповнила, будуть позначені червоною рамкою — їх потрібно внести вручну.</p>
+    </div></div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">3.5</span><div>
+      <p>Значення, в яких Аїшка не впевнена, будуть виділені, як на скріні 8. Їх потрібно перевірити й обов'язково натиснути <span class="btn-label">Перевірено</span>.</p>
+      <p class="note"><strong>Важливо:</strong> без позначки «Перевірено» система не пропустить цей товар.</p>
+    </div></div>
+    <figure><span class="frame"><img src="img/screen-8.jpg" width="509" height="134" alt="Значення, що потребує перевірки" loading="lazy"></span><figcaption><span class="tag">Скрін 8</span>Потребує перевірки</figcaption></figure>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">3.6</span><div>
+      <p>Біля кожного товару є кнопка, яка відкриває додатковий опис товару. Там також є поле, в якому можна вказати комплектність товару.</p>
+    </div></div>
+    <figure><span class="frame"><img src="gif/video-2.gif" width="1280" height="387" alt="Додатковий опис товару" loading="lazy"></span><figcaption><span class="tag video">Відео 2</span>Додатковий опис і комплектність</figcaption></figure>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">3.7</span><div>
+      <p>Якщо навести курсор на зображення, воно збільшується, щоб його можна було роздивитися (зручно для уточнення кольору). А якщо натиснути на зображення, відкриється меню вибору зображень.</p>
+    </div></div>
+    <figure><span class="frame"><img src="gif/video-3.gif" width="1280" height="751" alt="Збільшення зображення та меню вибору" loading="lazy"></span><figcaption><span class="tag video">Відео 3</span>Перегляд і вибір зображень</figcaption></figure>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">3.8</span><div>
+      <p>Для кожного товару потрібно вибрати додаткові фото, як показано на відео 4. Тут також можна змінити обкладинку.</p>
+    </div></div>
+    <figure><span class="frame"><img src="gif/video-4.gif" width="1280" height="663" alt="Вибір додаткових фото" loading="lazy"></span><figcaption><span class="tag video">Відео 4</span>Вибір додаткових фото та обкладинки</figcaption></figure>
+    <p style="margin-top:14px">Якщо натиснути на зображення, відкриється меню для швидкого редагування фото.</p>
+    <figure><span class="frame"><img src="gif/video-5.gif" width="1280" height="705" alt="Швидке редагування фото" loading="lazy"></span><figcaption><span class="tag video">Відео 5</span>Швидке редагування фото</figcaption></figure>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">3.9</span><div>
+      <p>Тут також можна завантажити фото собі на комп'ютер, а ще є швидкий перехід до товару в інтернеті (іконка браузера).</p>
+    </div></div>
+    <figure><span class="frame"><img src="img/screen-9.jpg" width="828" height="179" alt="Кнопки завантаження фото" loading="lazy"></span><figcaption><span class="tag">Скрін 9</span>Завантаження фото</figcaption></figure>
+    <figure><span class="frame"><img src="img/screen-10.jpg" width="755" height="55" alt="Іконка переходу до товару в інтернеті" loading="lazy"></span><figcaption><span class="tag">Скрін 10</span>Перехід до товару в інтернеті</figcaption></figure>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">3.10</span><div>
+      <p>Для зручності додано можливість сортування шаблону — зручно, наприклад, щоб знайти порожні значення.</p>
+    </div></div>
+    <figure><span class="frame"><img src="gif/video-6.gif" width="1100" height="647" alt="Сортування шаблону" loading="lazy"></span><figcaption><span class="tag video">Відео 6</span>Сортування</figcaption></figure>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">3.11</span><div>
+      <p>На скріні 11 є кілька елементів:</p>
+      <ol>
+        <li>якщо натиснути на артикул, він автоматично копіюється;</li>
+        <li>прапорці, які показують, чи вибрано додаткові фото і чи вибрано обкладинку;</li>
+        <li>лупа — після натискання відкриваються пошукові системи Google і DuckDuckGo.</li>
+      </ol>
+    </div></div>
+    <figure><span class="frame"><img src="img/screen-11.jpg" width="339" height="102" alt="Артикул, прапорці та лупа" loading="lazy"></span><figcaption><span class="tag">Скрін 11</span>Елементи рядка товару</figcaption></figure>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">3.12</span><div>
+      <p>Як масово додати обкладинки для всіх товарів. Для цього потрібно завантажити архів з обкладинками.</p>
+    </div></div>
+    <figure><span class="frame"><img src="gif/video-7.gif" width="1280" height="599" alt="Масове додавання обкладинок" loading="lazy"></span><figcaption><span class="tag video">Відео 7</span>Масове додавання обкладинок</figcaption></figure>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">3.13</span><div>
+      <p>Коли весь шаблон перевірено, виділяємо всі товари галочками і натискаємо кнопку <span class="btn-label">Затвердити</span>, як на відео 8. Це означає, що шаблон відправлено на перевірку. Після цього натискаємо кнопку <span class="btn-label">Хід перевірки</span> і чекаємо, поки Аїшка все перевірить.</p>
+    </div></div>
+    <figure><span class="frame"><img src="gif/video-8.gif" width="1280" height="756" alt="Затвердження шаблону" loading="lazy"></span><figcaption><span class="tag video">Відео 8</span>Затвердження шаблону</figcaption></figure>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="part" id="errors">
+  <div class="part-head"><div class="part-num">4</div><h2>Помилки</h2></div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">4.1</span><div>
+      <p>Після того як Аїшка перевірить товари, результат буде у вкладці <span class="btn-label">Повернуті</span>.</p>
+    </div></div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">4.2</span><div>
+      <p>Кожен товар з помилками матиме короткий опис. Виправляємо помилки, знову виділяємо все і натискаємо кнопку <span class="btn-label">Затвердити</span>.</p>
+    </div></div>
+    <figure><span class="frame"><img src="img/screen-12.jpg" width="1117" height="367" alt="Опис помилок у поверненому товарі" loading="lazy"></span><figcaption><span class="tag">Скрін 12</span>Опис помилок</figcaption></figure>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">4.2.1</span><div>
+      <p>Аїшка занадто прискіплива до фотографій, тому додано кнопку <span class="btn-label">Зараховано</span>. Натискаємо її, якщо з обкладинкою все добре; якщо ж ні — переробляємо.</p>
+    </div></div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-id">4.3</span><div>
+      <p>Коли всі помилки виправлено, натискаємо кнопку <span class="btn-label">Хід перевірки</span> — там є кнопка, яка завантажує архів.</p>
+      <p class="note"><strong>Не забудьте:</strong> перейменуйте архів відповідно до номера картки в Odoo і надішліть його в Telegram.</p>
+    </div></div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<footer>Інструкція з обробки контенту</footer>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true"><button class="lb-close" aria-label="Закрити">×</button><img alt=""></div>
+
+<script>
+(function(){
+  // theme toggle
+  var root=document.documentElement, btn=document.getElementById('themeBtn');
+  try{var t=localStorage.getItem('theme'); if(t) root.setAttribute('data-theme',t);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var next=cur==='dark'?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{localStorage.setItem('theme',next);}catch(e){}
+  });
+
+  // lightbox
+  var lb=document.getElementById('lb'), lbImg=lb.querySelector('img');
+  document.querySelectorAll('figure .frame img').forEach(function(img){
+    img.parentNode.addEventListener('click',function(){lbImg.src=img.src;lbImg.alt=img.alt;lb.classList.add('open');});
+  });
+  function close(){lb.classList.remove('open');lbImg.removeAttribute('src');}
+  lb.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+
+  // active toc item
+  var links=[].slice.call(document.querySelectorAll('nav.toc a'));
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        links.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+en.target.id);});
+      }
+    });
+  },{rootMargin:'-30% 0px -60% 0px'});
+  document.querySelectorAll('section.part').forEach(function(s){io.observe(s);});
+})();
+</script>
+</body>
+</html>
